@@ -5,8 +5,6 @@ import com.rabbitmq.client.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 public class Doctor {
@@ -46,7 +44,7 @@ public class Doctor {
     private static void bindResponseQueue() throws IOException {
         responseQueueName = channel.queueDeclare().getQueue();
         adminQueueName = channel.queueDeclare().getQueue();
-        channel.queueBind(responseQueueName, EXCHANGE_NAME, "*." + responseQueueName);
+        channel.queueBind(responseQueueName, EXCHANGE_NAME, responseQueueName);
         channel.queueBind(adminQueueName, FANOUT_EXCHANGE_NAME, "");
         System.out.println("ResponseQueue created: " + responseQueueName);
         Consumer consumer = new DefaultConsumer(channel) {
@@ -69,7 +67,7 @@ public class Doctor {
         String message = "(" + patient + "," + examination + ")";
         System.out.println("Publishing: " + message + " with response to: " + responseQueueName);
         AMQP.BasicProperties properties = new AMQP.BasicProperties.Builder().replyTo(responseQueueName).build();
-        channel.basicPublish(EXCHANGE_NAME, "admin." + examination.toLowerCase(), properties, message.getBytes("UTF-8"));
+        channel.basicPublish(EXCHANGE_NAME, examination.toLowerCase(), properties, message.getBytes("UTF-8"));
     }
 
     private static void declareExchange() throws IOException {
@@ -82,6 +80,6 @@ public class Doctor {
         factory.setHost("localhost");
         Connection connection = factory.newConnection();
         channel = connection.createChannel();
-        System.out.println("Connection to localhost succesful");
+        System.out.println("Connection to localhost successful");
     }
 }

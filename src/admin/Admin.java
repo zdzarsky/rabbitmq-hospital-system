@@ -53,6 +53,6 @@ public class Admin {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
         channel = factory.newConnection().createChannel();
-        System.out.println("Connection to localhost succesful");
+        System.out.println("Connection to localhost successful");
     }
 }

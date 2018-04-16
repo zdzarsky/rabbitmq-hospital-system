@@ -35,7 +35,7 @@ public class Technician {
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
                 String message = new String(body, "UTF-8");
                 System.out.println("Examination: " + message + " is done.");
-                channel.basicPublish(EXCHANGE_NAME, "admin." + properties.getReplyTo(), null, (message + "[DONE]").getBytes("UTF-8"));
+                channel.basicPublish(EXCHANGE_NAME, properties.getReplyTo(), null, (message + "[DONE]").getBytes("UTF-8"));
             }
         };
 
@@ -52,7 +52,7 @@ public class Technician {
 
     private static String declareQueue(String type) throws IOException {
         String queueName = channel.queueDeclare(type, false, false, false, null).getQueue();
-        channel.queueBind(queueName, EXCHANGE_NAME, "*." + type);
+        channel.queueBind(queueName, EXCHANGE_NAME, type);
         System.out.println("Created queue: " + queueName);
         return queueName;
     }
@@ -67,6 +67,6 @@ public class Technician {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
         channel  = factory.newConnection().createChannel();
-        System.out.println("Connection to localhost succesful");
+        System.out.println("Connection to localhost successful");
     }
 }
